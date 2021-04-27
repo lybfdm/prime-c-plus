@@ -1,0 +1,203 @@
+开头加上using namespace std;
+
+
+类型int, short,long都是默认signed,可正可负. Unsigned long等表示仅能大于等于0的值
+
+
+::i表示访问全局变量i而不是可能存在的局部变量i
+
+
+任何非0指针对应的条件都是true
+
+
+指针int* p和int *p均可
+
+
+如果想在多个文件之间共享const对象,必须在变量的定义之前添加extern关键字,文件的定义声明都需要加
+
+
+头文件保护符,包括#ifndef,#define,#endif
+#pragma once
+#ifndef SALESITEM_H
+#define SALESITEM_H
+#include <iostream>
+#include <string>
+
+class Sales_item
+{
+public:
+	Sales_item(const std::string& book) :isbn(book), units_sold(0), revenue(0.0) {}
+	Sales_item(std::istream& is) { is >> *this; }
+	friend std::istream& operator>>(std::istream&, Sales_item&);
+	friend std::ostream& operator<<(std::ostream&, const Sales_item&);
+public:
+	Sales_item& operator+=(const Sales_item&);
+public:
+	double avg_price() const;
+	bool same_isbn(const Sales_item& rhs)const
+	{
+		return isbn == rhs.isbn;
+	}
+	Sales_item() :units_sold(0), revenue(0.0) {}
+public:
+	std::string isbn;
+	unsigned units_sold;
+	double revenue;
+};
+#endif
+
+
+处理string对象中的字符,根据3.2.3中表3.3的函数来执行
+
+
+初始化vector对象的方法,根据3.3.1中表3.4来执行
+其他vector语句操作,根据3.3.3中表3.5来执行
+
+
+iterator中新增了两个函数,v.cbegin和cend,返回值无论对象本身,都是const_iterator
+
+
+->把解引用和成员访问结合在了一起,it->mem和(*it)->mem是一个意思
+
+
+注意,但凡是使用了迭代器的循环体,都不要向迭代器所属的容器添加元素,会使迭代器失效,比如push_back
+
+
+默认情况下,数组不允许拷贝和赋值
+
+
+c风格字符串的函数,不建议太多使用,注意必须以空字符'\0'结束,根据3.5.4中表3.8来执行
+
+
+bool值不应参与运算, a如果是true,那么-a也是true
+
+
+取模运算的运算对象必须是整数类型
+
+
+关系运算符比较结果返回的是布尔值,i<j<k其实是k和第一次比较得到的或真或假的结果
+
+
+后置递增运算是保留原始值副本输出,再加1,可以在某种情况下简洁代码:
+cout<<*iter++<<endl;
+等价于
+cout<<*iter<<endl;
+++iter;
+
+
+位异或运算符,如果两个运算对象二进制的对应位置有且只有一个为1则运算结果中该位为1,否则为0
+
+
+sizeof运算符返回一条表达式或者一个类型名字所占的字节数,但是其结果部分依赖与其作用的类型:
+1. 对char或者类型为char的表达式执行sizeof,结果是1
+2. 对引用类型执行sizeof运算得到被引用对象所占空间的大小
+3. 对指针执行sizeof得到指针本身所占空间的大小
+4. 对解引用指针执行sizeof得到指针指向的对象所占空间的大小,指针不需要有效
+5. 对数组执行sizeof得到整个数组所占空间的大小,等价于对数组中所有的元素各执行一次sizeof并将所得结果求和(执行sizeof能得到数组中元素个数,sizeof(ia)/sizeof(*ia)返回元素个数)
+6. 对string对象或vector对象执行sizeof只返回该类型固定部分的大小,不会计算对象中的元素占用了多少空间
+
+
+强类型转换不到万不得已不要使用
+
+
+运算符优先级表4.12,根据表4.4执行
+
+
+else与离他最近的尚未匹配的if匹配
+
+
+switch语句中case标签必须是整型常量表达式
+
+
+范围for语句中的范围变量必须是引用类型,这样才能对元素执行写操作
+
+
+break语句仅存在于while,do while和switch语句中
+
+
+continue语句仅存在于for,while和do while循环内部,表示终止当前迭代并开始下一个迭代
+
+
+goto label;
+...
+label:
+...
+不建议使用goto
+
+
+局部静态对象static生命周期贯穿函数调用及以后的时间知道程序终止才销毁
+
+
+参数传递时,最好使用传引用参数避免拷贝,同时如果无需改变对象内容,可以把形参定义成对常量的引用const
+
+
+尽量使用常量引用,普通引用仅限函数需要修改实参,同时普通引用还会限制实参传入类型
+
+
+void函数通常可以不用return结尾,它隐式存在执行.如果是return expression则void函数必须返回另一个void函数
+
+
+不要返回局部对象的引用或者指针
+
+
+main函数不能调用他自己,也不能重载
+
+
+调用函数重载时应尽量避免强制类型转换
+
+
+只有当类没有声明任何构造函数时,编译器才会自动地生成默认构造函数
+
+
+即使两个类的成员列表完全一致,他们也是不同类型
+
+
+构造函数成员是const或者引用的情况下,必须要初始化
+
+
+在构造函数声明前加上explicit用来抑制构造函数定义的隐式转换,但只对一个实参的构造函数有效,因为多实参的构造函数不能用于执行隐式转换,且explicit只能用于类内声明,只能用于直接初始化而非拷贝形式的初始化(使用=)
+
+
+类的静态成员可以作为默认实参
+
+
+IO对象无拷贝或赋值
+
+
+除了固定大小的array容器外,其他容器都能提供高效,灵活的内存管理
+
+
+顺序容器类型9.1,表9.1
+
+
+array和string使用swap和assign时需要注意迭代器,引用和指针失效问题
+
+
+顺序容器添加元素特例
+forward_list有自己的专属insert和emplace
+forward_list不支持push_back和emplace_back
+vector和string不支持push_front和emplace_front
+
+
+emplace_front，emplace和emplace_back分别对应push_front，insert和push_back，但是emplace函数在容器中直接构造元素，传递给emplace函数的参数必须与元素类型的构造函数相匹配
+
+
+string搜索操作,见9.5,表9.14
+
+
+string比较操作,见9.5,表9.15
+
+
+string与数值转换,见9.5,表9.16
+
+
+对于list和forward_list，应该优先使用成员函数算法而不是通用算法，见10.6，表10.6
+
+
+11.4无序容器，表11.8无序容器管理操作函数
+
+
+智能指针有两种，shared_ptr允许多个指针只想同一个对象；unique_ptr则一个指针指向一个对象；weak_ptr是一种弱引用，指向shared_ptr所管理的对象
+
+
+share_ptr和unique_ptr操作在表12.1和表12.4, weak_ptr操作在表12.5
